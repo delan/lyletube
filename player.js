@@ -10,6 +10,7 @@ function init() {
 function ready() {
 	yt = new YT.Player('ytdom', {
 		playerVars: {
+			wmode: 'transparent',
 			iv_load_policy: 3,
 			modestbranding: 1,
 			controls: 0,
