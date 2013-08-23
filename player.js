@@ -32,6 +32,8 @@ function show() {
 
 function play(id) {
 	yt.loadVideoById(id);
+	yt.unMute();
+	yt.setVolume(100);
 }
 
 function on(ytevent, func) {
