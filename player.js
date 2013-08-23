@@ -1,5 +1,7 @@
 (function(global) {
 
+var shown = false;
+
 function init() {
 	var tag = document.createElement('script');
 	tag.src = "https://www.youtube.com/iframe_api";
@@ -28,9 +30,17 @@ function ready() {
 function show() {
 	var ytdom = document.getElementById('ytdom');
 	ytdom.classList.remove('hidden');
+	shown = true;
 }
 
 function play(id) {
+	console.log('play() called');
+	if (!shown) {
+		console.log('play(): player not yet shown');
+		on('ready', play.bind(null, id));
+		show();
+		return;
+	}
 	yt.loadVideoById(id);
 	yt.unMute();
 	yt.setVolume(100);
@@ -42,9 +52,10 @@ function on(ytevent, func) {
 }
 
 function handler(event) {
-	handlers[this].forEach(function(func) {
-		func(event);
-	});
+	if (handlers[this])
+		handlers[this].forEach(function(func) {
+			func(event);
+		});
 }
 
 var handlers = {};

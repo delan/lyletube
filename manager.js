@@ -1,6 +1,6 @@
 (function(global) {
 
-var player, ready = false;
+var player, ready;
 
 function reopen() {
 	if (player && !player.closed)
@@ -11,6 +11,7 @@ function reopen() {
 		'menubar=0,toolbar=0,location=0,' +
 		'personalbar=0,directories=0,status=0'
 	);
+	ready = false;
 	if (player)
 		$(player).load(setup);
 	global.player = player;
