@@ -31,6 +31,8 @@ global.onYouTubeIframeAPIReady = ready;
 global.show = show;
 global.play = play;
 
+$(window).on('unload', global.close);
+
 init();
 
 })(this);
