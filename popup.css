@@ -1,0 +1,24 @@
+html, body {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+section {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+}
+.hidden {
+	display: none;
+}
+#ytdom {
+	width: 100%;
+	height: 100%;
+}
+#notice {
+	padding-top: 4em;
+}
