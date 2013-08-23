@@ -15,6 +15,12 @@ function ready() {
 			modestbranding: 1,
 			controls: 0,
 			showinfo: 0
+		},
+		events: {
+			onReady:                  handler.bind('ready'),
+			onPlaybackQualityChange:  handler.bind('quality'),
+			onStateChange:            handler.bind('state'),
+			onError:                  handler.bind('error'),
 		}
 	});
 }
@@ -28,10 +34,24 @@ function play(id) {
 	yt.loadVideoById(id);
 }
 
+function on(ytevent, func) {
+	handlers[ytevent] = handlers[ytevent] || [];
+	handlers[ytevent].push(func);
+}
+
+function handler(event) {
+	handlers[this].forEach(function(func) {
+		func(event);
+	});
+}
+
+var handlers = {};
+
 global.yt = null;
 global.onYouTubeIframeAPIReady = ready;
 global.show = show;
 global.play = play;
+global.yton = on;
 
 $(window).on('unload', global.close);
 
