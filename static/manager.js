@@ -1,5 +1,7 @@
 (function(global) {
 
+var seeking = false;
+
 global.player = null;
 global.ready = false;
 
@@ -35,9 +37,15 @@ function update() {
 		var seek = $('#seek')[0];
 		var a = player.yt.getCurrentTime();
 		var b = player.yt.getDuration();
-		$('#total').text(time(seek.max = b));
-		$('#elapsed').text(time(seek.value = a));
+		if (!seeking) {
+			seek.value = a;
+			seek.max = b;
+		}
+		$('#elapsed').text(time(a));
+		$('#total').text(time(b));
 	}
+	$('#controls input, #controls button:not(#reopen)').
+		prop('disabled', !ready);
 }
 
 function play(id) {
