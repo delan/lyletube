@@ -30,8 +30,9 @@ def parseyt(url):
 		if q.has_key('v'):
 			result['good'] = True
 			result['id'] = q['v'][0]
-		elif u.netloc == 'youtu.be':
-			pass
+	elif u.netloc == 'youtu.be':
+		result['good'] = True
+		result['id'] = u.path[1:]
 	if q.has_key('t'):
 		result['start'] = parseytt(q['t'][0])
 	if f.has_key('t'):
