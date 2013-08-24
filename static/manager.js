@@ -75,6 +75,19 @@ $('#seek').mouseup(function() {
 	seeking = false;
 });
 
+$('#pp').click(function() {
+	console.log('#pp:click called');
+	if (player.yt.getPlayerState() == 2)
+		player.yt.playVideo();
+	else
+		player.yt.pauseVideo();
+});
+
+$('#stop').click(function() {
+	console.log('#stop:click called');
+	player.yt.stopVideo();
+});
+
 global.setInterval(update, 500);
 
 reopen();
