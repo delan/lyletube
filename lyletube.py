@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import flask, os, sys, time, json
+import flask, os, sys, time, json, re
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
@@ -12,6 +12,46 @@ else:
 
 app = flask.Flask(__name__, static_folder=os.path.join(basedir, 'static'))
 PORT = 13337
+
+def parseyt(url):
+	u = urlparse.urlparse(url)
+	q = urlparse.parse_qs(u.query)
+	f = urlparse.parse_qs(u.fragment)
+	if u.scheme == '':
+		return parseyt('http://' + url)
+	result = {
+		'good':   False,
+		'id':     None,
+		'start':  None,
+		'end':    None,
+		'title':  None
+	}
+	if u.netloc == 'www.youtube.com':
+		if q.has_key('v'):
+			result['good'] = True
+			result['id'] = q['v']
+	elif u.netloc == 'youtu.be':
+		pass
+	if q.has_key('t'):
+		result['start'] = parse_start(q['t'])
+	if f.has_key('t'):
+		result['start'] = parse_start(f['t'])
+	return result
+
+def parseytt(t):
+	good = False
+	result = 0
+	for i in re.finditer('(\d+)([hms])', t):
+		good = True
+		if i.group(2) == 'h':
+			result += int(i.group(1)) * 3600
+		elif i.group(2) == 'm':
+			result += int(i.group(1)) * 60
+		else:
+			result += int(i.group(1))
+	if not good:
+		result = None
+	return result
 
 @app.route('/')
 def hello():
