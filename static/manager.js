@@ -1,6 +1,7 @@
 (function(global) {
 
 var seeking = false;
+var heap_lastid = 0;
 
 global.player = null;
 global.ready = false;
@@ -49,6 +50,18 @@ function update() {
 	}
 	$('#controls input, #controls button:not(#reopen)').
 		prop('disabled', !ready);
+	$.get('heap?after=' + heap_lastid, function(data) {
+		for (var i = data.length - 1; i >= 0; i--) {
+			$('#heaps')[0].add(new Option(
+				data[i].serial + ' - ' +
+				time(data[i].duration) + ' - ' +
+				data[i].title,
+				i
+			), 0);
+			if (data[i].serial > heap_lastid)
+				heap_lastid = data[i].serial;
+		}
+	});
 }
 
 function play(id) {

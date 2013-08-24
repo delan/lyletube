@@ -16,6 +16,7 @@ PORT = 13337
 heap = []
 queue = []
 history = []
+lastid = 0
 
 def parseyt(url):
 	u = urlparse.urlparse(url)
@@ -29,7 +30,8 @@ def parseyt(url):
 		'start':  None,
 		'end':    None,
 		'title':  None,
-		'duration': None
+		'duration': None,
+		'serial': None
 	}
 	if u.netloc == 'www.youtube.com':
 		if q.has_key('v'):
@@ -80,6 +82,9 @@ def submiturl(url):
 	obj = parseyt(url)
 	obj = getytinfo(obj)
 	if obj is not None:
+		global lastid
+		lastid += 1
+		obj['serial'] = lastid
 		heap.insert(0, obj)
 
 @app.route('/')
@@ -100,7 +105,12 @@ def p_heap():
 		urls = flask.request.form['urls'].split('\r\n')
 		for url in urls:
 			threading.Thread(target=submiturl, args=(url,)).start()
-	return flask.Response(json.dumps(heap), mimetype='application/json')
+	if flask.request.args.has_key('after'):
+		after = int(flask.request.args['after'])
+		result = [obj for obj in heap if obj['serial'] > after]
+	else:
+		result = heap
+	return flask.Response(json.dumps(result), mimetype='application/json')
 
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
