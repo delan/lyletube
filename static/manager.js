@@ -27,13 +27,13 @@ function reopen() {
 function h_ready() {
 	console.log('h_ready() called');
 	ready = true;
+	next();
 }
 
 function h_state(event) {
 	console.log('h_state() called');
-	if (event.data == 0) {
+	if (event.data == 0)
 		next();
-	}
 }
 
 function time(sec) {
