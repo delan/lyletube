@@ -49,6 +49,7 @@ function update() {
 }
 
 function play(id) {
+	console.log('play() called');
 	if (ready) {
 		player.$('#ytdom').css('opacity', 1);
 		player.yt.loadVideoById(id);
@@ -56,6 +57,7 @@ function play(id) {
 }
 
 $(window).on('unload', function() {
+	console.log('window:unload called');
 	if (player)
 		player.close();
 });
