@@ -49,8 +49,10 @@ function update() {
 }
 
 function play(id) {
-	player.$('#ytdom').css('opacity', 1);
-	player.yt.loadVideoById(id);
+	if (ready) {
+		player.$('#ytdom').css('opacity', 1);
+		player.yt.loadVideoById(id);
+	}
 }
 
 $(window).on('unload', function() {
