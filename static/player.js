@@ -3,6 +3,7 @@
 var shown = false;
 
 function init() {
+	global.opener.console.log('player.js: init() called');
 	var tag = document.createElement('script');
 	tag.src = "https://www.youtube.com/iframe_api";
 	var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -10,7 +11,7 @@ function init() {
 }
 
 function ready() {
-	console.log(h_ready);
+	global.opener.console.log('player.js: ready() called');
 	yt = new YT.Player('ytdom', {
 		playerVars: {
 			// wmode: 'transparent',
@@ -30,6 +31,7 @@ function ready() {
 }
 
 function show() {
+	global.opener.console.log('player.js: show() called');
 	var ytdom = document.getElementById('ytdom');
 	ytdom.classList.remove('hidden');
 	shown = true;
@@ -43,6 +45,7 @@ global.h_error =   global.h_error   || function() {};
 global.onYouTubeIframeAPIReady = ready;
 
 $(window).on('unload', function() {
+	global.opener.console.log('player.js: window:unload called');
 	global.opener.ready = false;
 	global.opener.player = null;
 	global.close();
