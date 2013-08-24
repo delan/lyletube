@@ -1,0 +1,28 @@
+@font-face {
+	font-family: Symbola;
+	src: local(Symbola), url(Symbola.ttf);
+}
+* {
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+html, body {
+	width: 100%;
+	height: 100%;
+	font-family: Segoe UI, Open Sans, sans-serif;
+	overflow: hidden;
+}
+h1 {
+	margin: 2em;
+	font-size: 3em;
+}
+footer {
+	text-align: center;
+}
+p {
+	margin: 1em;
+}
+.subtle {
+	color: #c0c0c0;
+	font-weight: bold;
+}

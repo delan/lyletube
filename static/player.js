@@ -10,9 +10,8 @@ function init() {
 
 function ready() {
 	global.opener.console.log('player.js: ready() called');
-	yt = new YT.Player('ytdom', {
+	global.yt = new YT.Player('youtube_element', {
 		playerVars: {
-			// wmode: 'transparent',
 			wmode: 'opaque',
 			iv_load_policy: 3,
 			modestbranding: 1,
@@ -20,19 +19,19 @@ function ready() {
 			showinfo: 0
 		},
 		events: {
-			onReady:                  global.h_ready,
-			onPlaybackQualityChange:  global.h_quality,
-			onStateChange:            global.h_state,
-			onError:                  global.h_error,
+			onReady:                  global.yt_handler_ready,
+			onPlaybackQualityChange:  global.yt_handler_quality,
+			onStateChange:            global.yt_handler_state,
+			onError:                  global.yt_handler_error,
 		}
 	});
 }
 
 global.yt = null;
-global.h_ready =   global.h_ready   || function() {};
-global.h_quality = global.h_quality || function() {};
-global.h_state =   global.h_state   || function() {};
-global.h_error =   global.h_error   || function() {};
+global.yt_handler_ready =   global.yt_handler_ready   || function() {};
+global.yt_handler_quality = global.yt_handler_quality || function() {};
+global.yt_handler_state =   global.yt_handler_state   || function() {};
+global.yt_handler_error =   global.yt_handler_error   || function() {};
 global.onYouTubeIframeAPIReady = ready;
 
 $(window).on('unload', function() {

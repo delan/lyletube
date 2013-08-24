@@ -4,14 +4,20 @@
 		<meta charset="utf-8">
 		<title>lyletube</title>
 		<link href="static/reset-2.0.css" rel="stylesheet">
+		<link href="static/style.css" rel="stylesheet">
 		<link href="static/submit.css" rel="stylesheet">
 	</head>
 	<body>
-		<button type="button" id="submit">submit.</button>
-		<textarea placeholder="one YouTube URL per line"
-			id="urls" wrap="off"></textarea>
-		<script src="http://code.jquery.com/jquery-2.0.3.min.js">
-		</script>
+		<button type="button" id="submit_button">submit.</button>
+		<textarea
+			id="url_entry" wrap="off" autofocus
+			placeholder="Enter one YouTube URL per line."
+		></textarea>
+		<footer>
+			<p>Hit Ctrl+Enter to submit more quickly.
+			<p class="subtle">Delan Azabani
+		</footer>
+		<script src="static/jquery-2.0.3.min.js"></script>
 		<script src="static/submit.js"></script>
 	</body>
 </html>

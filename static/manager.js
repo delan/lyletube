@@ -1,171 +1,175 @@
 (function(global) {
 
-var seeking = false;
+var currently_mouse_seeking = false;
 var last_heap_serial = 0;
 var last_queue_serial = 0;
 
-global.queue = [];
-global.current = null;
-global.player = null;
+global.video_queue = [];
+global.current_video = null;
+global.player_window = null;
 global.ready = false;
 
-function reopen() {
-	console.log('reopen() called');
-	ready = false;
-	if (player && !player.closed)
-		player.close();
-	if (player = window.open(
-		'player', 'player',
+function reopen_player_window() {
+	console.log('reopen_player_window() called');
+	global.ready = false;
+	if (player_window && !player_window.closed)
+		player_window.close();
+	if (player_window = window.open(
+		'player', 'player_window',
 		'width=640,height=360,scrollbars=0,' +
 		'menubar=0,toolbar=0,location=0,' +
 		'personalbar=0,directories=0,status=0'
 	)) {
-		player.h_ready = h_ready;
-		player.h_state = h_state;
+		player_window.yt_handler_ready = yt_handler_ready;
+		player_window.yt_handler_state = yt_handler_state;
 	}
 }
 
-function h_ready() {
-	console.log('h_ready() called');
-	ready = true;
-	next();
+function yt_handler_ready() {
+	console.log('yt_handler_ready() called');
+	global.ready = true;
+	play_next_in_playlist();
 }
 
-function h_state(event) {
-	console.log('h_state() called:', event.data);
+function yt_handler_state(event) {
+	console.log('yt_handler_state() called:', event.data);
 	if (event.data == 0)
-		next();
+		play_next_in_playlist();
 	else if (event.data == 1)
-		player.yt.seekTo(current.start || 0);
+		player_window.yt.seekTo(current.start || 0);
 }
 
-function time(sec) {
+function friendly_time(sec) {
 	var m = String(sec / 60 | 0);
 	var s = String(sec % 60 | 0);
 	s = s.length < 2 ? '0' + s : s;
 	return m + ':' + s;
 }
 
-function update() {
-	if (ready) {
+function update_ui() {
+	if (global.ready) {
 		var seek = $('#seek')[0];
-		var a = player.yt.getCurrentTime();
-		var b = player.yt.getDuration();
-		if (!seeking) {
+		var a = player_window.yt.getCurrentTime();
+		var b = player_window.yt.getDuration();
+		if (!currently_mouse_seeking) {
 			seek.value = a;
 			seek.max = b;
 		}
-		$('#elapsed').text(time(a));
-		$('#total').text(time(b));
+		$('#elapsed').text(friendly_time(a));
+		$('#total').text(friendly_time(b));
 	} else {
 		$('#title').text('(none)');
 		$('#elapsed, #total').text('0:00');
 	}
 	$('#controls input, #controls button:not(#reopen)').
-		prop('disabled', !ready);
-	$.get('heap', function(data) {
-		var heaps = $('#heaps')[0];
-		var old_last_heap_serial = last_heap_serial;
-		for (var i = 0; i < data.length; i++) {
-			if (data[i].serial <= old_last_heap_serial)
-				continue;
-			heaps.add(new Option(
-				'[' + time(data[i].duration) +
-				'] ' + data[i].title,
-				data[i].serial
-			));
-			if (data[i].serial > last_heap_serial)
-				last_heap_serial = data[i].serial;
-		}
-	});
-	$.get('queue', function(data) {
-		queue = data;
-		var queues = $('#queues')[0];
-		var old_last_queue_serial = last_queue_serial;
-		for (var i = 0; i < data.length; i++) {
-			if (data[i].serial <= old_last_queue_serial)
-				continue;
-			queues.add(new Option(
-				'[' + time(data[i].duration) +
-				'] ' + data[i].title,
-				data[i].serial
-			));
-			if (data[i].serial > last_queue_serial)
-				last_queue_serial = data[i].serial;
-		}
-	});
-	if (ready && player.yt.getPlayerState() == 0)
-		next();
+		prop('disabled', !global.ready);
+	$.get('heap', get_heap_handler);
+	$.get('queue', get_queue_handler);
 }
 
-function play(id) {
-	console.log('play() called');
-	if (ready) {
-		player.$('#ytdom').css('opacity', 1);
-		player.yt.loadVideoById(id);
+function get_heap_handler(data) {
+	var heap_list = $('#heap_list')[0];
+	var old_last_heap_serial = last_heap_serial;
+	for (var i = 0; i < data.length; i++) {
+		if (data[i].serial <= old_last_heap_serial)
+			continue;
+		heap_list.add(new Option(
+			'[' + friendly_time(data[i].duration) +
+			'] ' + data[i].title,
+			data[i].serial
+		));
+		if (data[i].serial > last_heap_serial)
+			last_heap_serial = data[i].serial;
 	}
 }
 
-function next() {
-	if (current = queue.shift()) {
-		console.log('next() called:', current);
-		var queues = $('#queues')[0];
-		var serials = [parseInt(queues.options[0].value)];
+function get_queue_handler(data) {
+	var queue_list = $('#queue_list')[0];
+	var old_last_queue_serial = last_queue_serial;
+	global.video_queue = data;
+	for (var i = 0; i < data.length; i++) {
+		if (data[i].serial <= old_last_queue_serial)
+			continue;
+		queue_list.add(new Option(
+			'[' + friendly_time(data[i].duration) +
+			'] ' + data[i].title,
+			data[i].serial
+		));
+		if (data[i].serial > last_queue_serial)
+			last_queue_serial = data[i].serial;
+	}
+}
+
+function play_video(id) {
+	console.log('play_video() called');
+	if (ready) {
+		player_window.$('#youtube_element').css('opacity', 1);
+		player_window.yt.loadVideoById(id);
+	}
+}
+
+function play_next_in_playlist() {
+	console.log('play_next_in_playlist() called');
+	if (current_video = video_queue.shift()) {
+		console.log('play_next_in_playlist():', current_video);
+		var queue_list = $('#queue_list')[0];
+		var serials = [parseInt(queue_list.options[0].value)];
 		$.post('dequeue', { serials: JSON.stringify(serials) });
-		queues.remove(0);
-		play(current.id);
-		$('#title').text(current.title);
+		queue_list.remove(0);
+		play_video(current_video.id);
+		$('#title').text(current_video.title);
 	}
 }
 
 $(window).on('unload', function() {
 	console.log('window:unload called');
-	if (player)
-		player.close();
+	if (player_window)
+		player_window.close();
 });
 
-$('#reopen').click(reopen);
+$('#reopen').click(reopen_player_window);
 
 $('#seek').change(function() {
 	console.log('#seek:change called');
-	player.yt.seekTo(this.value);
+	player_window.yt.seekTo(this.value);
 });
 
 $('#seek').mousedown(function() {
 	console.log('#seek:mousedown called');
-	seeking = true;
+	currently_mouse_seeking = true;
 });
 
 $('#seek').mouseup(function() {
 	console.log('#seek:mouseup called');
-	seeking = false;
+	currently_mouse_seeking = false;
 });
 
 $('#pp').click(function() {
 	console.log('#pp:click called');
-	if (player.yt.getPlayerState() == 2)
-		player.yt.playVideo();
+	if (player_window.yt.getPlayerState() == 2)
+		player_window.yt.playVideo();
 	else
-		player.yt.pauseVideo();
+		player_window.yt.pauseVideo();
 });
 
-$('#approve').click(function() {
+$('#heap_approve_button').click(function() {
 	console.log('#approve:click called');
-	var heaps = $('#heaps')[0];
+	var heap_list = $('#heap_list')[0];
 	var serials = [];
-	for (var i = heaps.options.length - 1; i >= 0; i--) {
-		if (heaps.options[i].selected) {
-			serials.push(parseInt(heaps.options[i].value));
-			heaps.remove(i);
+	for (var i = heap_list.options.length - 1; i >= 0; i--) {
+		if (heap_list.options[i].selected) {
+			var value = heap_list.options[i].value;
+			serials.push(parseInt(value));
+			heap_list.remove(i);
 		}
 	}
 	$.post('queue', { serials: JSON.stringify(serials) });
 });
 
-global.setInterval(update, 500);
+global.setInterval(update_ui, 500);
 
-reopen();
+reopen_player_window();
 
-global.play = play;
+global.play_video = play_video;
 
 })(this);

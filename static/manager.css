@@ -1,90 +1,90 @@
-@font-face {
-	font-family: Symbola;
-	src: local(Symbola), url(Symbola.ttf);
-}
-body {
-	font-family: Segoe UI, Open Sans, sans-serif;
-}
 h2 {
 	font-size: 2em;
 	font-weight: bold;
 	text-align: center;
 	padding: 1rem;
 }
-#controls, #status {
+#controls {
 	background: ThreeDFace;
-}
-#heap, #queue, #history {
-	position: absolute;
-	top: 4rem;
-	bottom: 4rem;
-}
-#heap {
-	left: 2.5%;
-	width: 30%;
-}
-#queue {
-	left: 35%;
-	width: 30%;
-}
-#history {
-	left: 67.5%;
-	width: 30%;
-}
-#status {
 	color: #808080;
 	font-size: 2em;
-	padding: 1rem;
+	height: 6rem;
 	position: absolute;
 	left: 0;
-	bottom: 0;
 	right: 0;
+	bottom: 0;
 }
-#controls_l, #status_l {
-	float: left;
-}
-#controls_r, #status_r {
-	float: right;
-}
-#controls input, #controls button {
-	vertical-align: middle;
-}
-#controls button {
-	font-family: Symbola;
-	font-size: 2em;
-	width: 4rem;
-	height: 4rem;
-}
-#seek {
-	height: 4rem;
+	#controls button {
+		width: 4rem;
+		height: 4rem;
+		font-family: Symbola;
+		font-size: 3rem;
+		vertical-align: middle;
+		position: absolute;
+		bottom: 0;
+	}
+	#seek {
+		margin: 0;
+		width: 100%;
+		height: 2rem;
+		position: absolute;
+		top: 0;
+	}
+	#pp {
+		left: 0;
+		bottom: 0;
+	}
+	#reopen {
+		right: 0;
+		bottom: 0;
+	}
+	#playing {
+		height: 3rem;
+		position: absolute;
+		left: 5rem;
+		right: 20rem;
+		bottom: 0;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	#time {
+		height: 3rem;
+		position: absolute;
+		right: 5rem;
+		bottom: 0;
+	}
+	#title, #elapsed, #total {
+		color: black;
+	}
+#heap_section, #queue_section, #history_section {
 	position: absolute;
 	top: 0;
-	left: 5rem;
-	right: 5rem;
+	bottom: 7rem;
 }
-#status_l {
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	height: 3rem;
-	position: absolute;
-	left: 1rem;
-	right: 12rem;
-}
-#title, #elapsed, #total {
-	color: black;
-}
-#heaps, #queues, #histories {
-	font-size: 1.5em;
-	width: 100%;
-	position: absolute;
-	top: 4rem;
-	bottom: 5rem;
-}
-#heap button, #queue button, #history button {
-	font-family: Symbola;
-	font-size: 2em;
-	width: 100%;
-	position: absolute;
-	bottom: 1rem;
-}
+	#heap_section button, #queue_section button, #history_section button {
+		font-family: Symbola;
+		font-size: 2em;
+		width: 100%;
+		position: absolute;
+		bottom: 0;
+	}
+	#heap_section {
+		left: 2.5%;
+		width: 30%;
+	}
+	#queue_section {
+		left: 35%;
+		width: 30%;
+	}
+	#history_section {
+		left: 67.5%;
+		width: 30%;
+	}
+	#heap_list, #queue_list, #history_list {
+		font-size: 1.5em;
+		width: 100%;
+		position: absolute;
+		top: 4rem;
+		bottom: 3rem;
+	}
