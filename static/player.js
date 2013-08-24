@@ -10,6 +10,7 @@ function init() {
 }
 
 function ready() {
+	console.log(h_ready);
 	yt = new YT.Player('ytdom', {
 		playerVars: {
 			wmode: 'transparent',
@@ -19,10 +20,10 @@ function ready() {
 			showinfo: 0
 		},
 		events: {
-			onReady:                  handler.bind('ready'),
-			onPlaybackQualityChange:  handler.bind('quality'),
-			onStateChange:            handler.bind('state'),
-			onError:                  handler.bind('error'),
+			onReady:                  global.h_ready,
+			onPlaybackQualityChange:  global.h_quality,
+			onStateChange:            global.h_state,
+			onError:                  global.h_error,
 		}
 	});
 }
@@ -33,46 +34,18 @@ function show() {
 	shown = true;
 }
 
-function play(id) {
-	console.log('play() called');
-	if (!shown) {
-		console.log('play(): player not yet shown');
-		on('ready', play.bind(null, id));
-		show();
-		return;
-	}
-	yt.loadVideoById(id);
-	yt.unMute();
-	yt.setVolume(100);
-}
-
-function seek(t) {
-	console.log('seek() called');
-	yt.seekTo(t);
-}
-
-function on(ytevent, func) {
-	handlers[ytevent] = handlers[ytevent] || [];
-	handlers[ytevent].push(func);
-}
-
-function handler(event) {
-	if (handlers[this])
-		handlers[this].forEach(function(func) {
-			func(event);
-		});
-}
-
-var handlers = {};
-
 global.yt = null;
+global.h_ready =   global.h_ready   || function() {};
+global.h_quality = global.h_quality || function() {};
+global.h_state =   global.h_state   || function() {};
+global.h_error =   global.h_error   || function() {};
 global.onYouTubeIframeAPIReady = ready;
-global.show = show;
-global.play = play;
-global.seek = seek;
-global.yton = on;
 
-$(window).on('unload', global.close);
+$(window).on('unload', function() {
+	global.opener.ready = false;
+	global.opener.player = null;
+	global.close();
+});
 
 init();
 

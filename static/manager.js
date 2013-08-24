@@ -1,31 +1,26 @@
 (function(global) {
 
-var player, ready;
+global.player = null;
+global.ready = false;
 
 function reopen() {
+	console.log('reopen() called');
+	ready = false;
 	if (player && !player.closed)
 		player.close();
-	player = window.open(
+	if (player = window.open(
 		'player', 'player',
 		'width=640,height=360,scrollbars=0,' +
 		'menubar=0,toolbar=0,location=0,' +
 		'personalbar=0,directories=0,status=0'
-	);
-	ready = false;
-	if (player)
-		$(player).load(setup);
-	global.player = player;
+	)) {
+		player.h_ready = h_ready;
+	}
 }
 
-function setup() {
-	console.log('setup() called');
-	player.yton('ready', function() {
-		console.log('from player: ready event');
-		ready = true;
-	});
-	player.yton('state', function(event) {
-		console.log('from player: state event: ' + event.data);
-	});
+function h_ready() {
+	console.log('h_ready() called');
+	ready = true;
 }
 
 function time(sec) {
@@ -45,8 +40,13 @@ function update() {
 	}
 }
 
+function play(id) {
+	player.$('#ytdom').css('opacity', 1);
+	player.yt.loadVideoById(id);
+}
+
 function seek() {
-	player.seek(this.value);
+	player.yt.seekTo(this.value);
 }
 
 $(window).on('unload', function() {
@@ -61,5 +61,7 @@ $('#seek').change(seek);
 global.setInterval(update, 500);
 
 reopen();
+
+global.play = play;
 
 })(this);
