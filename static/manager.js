@@ -4,6 +4,7 @@ var seeking = false;
 var last_heap_serial = 0;
 var last_queue_serial = 0;
 
+global.queue = [];
 global.player = null;
 global.ready = false;
 
@@ -19,12 +20,20 @@ function reopen() {
 		'personalbar=0,directories=0,status=0'
 	)) {
 		player.h_ready = h_ready;
+		player.h_state = h_state;
 	}
 }
 
 function h_ready() {
 	console.log('h_ready() called');
 	ready = true;
+}
+
+function h_state(event) {
+	console.log('h_state() called');
+	if (event.data == 0) {
+		next();
+	}
 }
 
 function time(sec) {
@@ -75,14 +84,24 @@ function update() {
 				last_queue_serial = data[i].serial;
 		}
 	});
+	$.get('queue', function(data) {
+		queue = data;
+	});
 }
 
-function play(id) {
+function play(id, start) {
 	console.log('play() called');
 	if (ready) {
 		player.$('#ytdom').css('opacity', 1);
 		player.yt.loadVideoById(id);
+		player.yt.seekTo(start || 0);
 	}
+}
+
+function next() {
+	var obj = queue.shift();
+	play(obj.id, obj.start);
+	$('#title').text(obj.title);
 }
 
 $(window).on('unload', function() {
@@ -134,5 +153,6 @@ global.setInterval(update, 500);
 reopen();
 
 global.play = play;
+global.next = next;
 
 })(this);
