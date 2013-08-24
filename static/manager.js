@@ -61,6 +61,7 @@ $(window).on('unload', function() {
 $('#reopen').click(reopen);
 
 $('#seek').change(function() {
+	console.log('#seek:change called');
 	player.yt.seekTo(this.value);
 });
 
