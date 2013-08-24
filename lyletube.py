@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import flask, os, sys, time, json, re, urlparse
+import flask, os, sys, time, json, re, urlparse, urllib2
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
@@ -24,7 +24,8 @@ def parseyt(url):
 		'id':     None,
 		'start':  None,
 		'end':    None,
-		'title':  None
+		'title':  None,
+		'duration': None
 	}
 	if u.netloc == 'www.youtube.com':
 		if q.has_key('v'):
@@ -53,6 +54,16 @@ def parseytt(t):
 	if not good:
 		result = None
 	return result
+
+def getytinfo(obj):
+	info = urlparse.parse_qs(urllib2.urlopen(
+		'http://www.youtube.com/get_video_info?video_id=' +
+		obj['id']
+	).read())
+	if info.has_key('title') and info.has_key('length_seconds'):
+		obj['title'] = info['title'][0]
+		obj['duration'] = info['length_seconds'][0]
+	return obj
 
 @app.route('/')
 def hello():
