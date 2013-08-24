@@ -105,6 +105,8 @@ function play_video(id) {
 	if (ready) {
 		player_window.$('#youtube_element').css('opacity', 1);
 		player_window.yt.loadVideoById(id);
+		yt.unMute();
+		yt.setVolume(100);
 	}
 }
 
