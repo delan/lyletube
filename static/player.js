@@ -1,7 +1,5 @@
 (function(global) {
 
-var shown = false;
-
 function init() {
 	global.opener.console.log('player.js: init() called');
 	var tag = document.createElement('script');
@@ -28,13 +26,6 @@ function ready() {
 			onError:                  global.h_error,
 		}
 	});
-}
-
-function show() {
-	global.opener.console.log('player.js: show() called');
-	var ytdom = document.getElementById('ytdom');
-	ytdom.classList.remove('hidden');
-	shown = true;
 }
 
 global.yt = null;
