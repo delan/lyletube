@@ -5,6 +5,7 @@ var last_heap_serial = 0;
 var last_queue_serial = 0;
 
 global.queue = [];
+global.current = null;
 global.player = null;
 global.ready = false;
 
@@ -31,9 +32,11 @@ function h_ready() {
 }
 
 function h_state(event) {
-	console.log('h_state() called');
+	console.log('h_state() called:', event.data);
 	if (event.data == 0)
 		next();
+	else if (event.data == 1)
+		player.yt.seekTo(current.start || 0);
 }
 
 function time(sec) {
@@ -95,24 +98,23 @@ function update() {
 		next();
 }
 
-function play(id, start) {
+function play(id) {
 	console.log('play() called');
 	if (ready) {
 		player.$('#ytdom').css('opacity', 1);
 		player.yt.loadVideoById(id);
-		player.yt.seekTo(start || 0);
 	}
 }
 
 function next() {
-	var obj;
-	if (obj = queue.shift()) {
+	if (current = queue.shift()) {
+		console.log('next() called:', current);
 		var queues = $('#queues')[0];
 		var serials = [parseInt(queues.options[0].value)];
 		$.post('dequeue', { serials: JSON.stringify(serials) });
 		queues.remove(0);
-		play(obj.id, obj.start);
-		$('#title').text(obj.title);
+		play(current.id);
+		$('#title').text(current.title);
 	}
 }
 
