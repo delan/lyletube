@@ -91,6 +91,8 @@ function update() {
 				last_queue_serial = data[i].serial;
 		}
 	});
+	if (ready && player.yt.getPlayerState() == 0)
+		next();
 }
 
 function play(id, start) {
