@@ -60,9 +60,12 @@ function update() {
 	}
 	$('#controls input, #controls button:not(#reopen)').
 		prop('disabled', !ready);
-	$.get('heap?after=' + last_heap_serial, function(data) {
+	$.get('heap', function(data) {
 		var heaps = $('#heaps')[0];
+		var old_last_heap_serial = last_heap_serial;
 		for (var i = 0; i < data.length; i++) {
+			if (data[i].serial <= old_last_heap_serial)
+				continue;
 			heaps.add(new Option(
 				'[' + time(data[i].duration) +
 				'] ' + data[i].title,
@@ -72,9 +75,13 @@ function update() {
 				last_heap_serial = data[i].serial;
 		}
 	});
-	$.get('queue?after=' + last_queue_serial, function(data) {
+	$.get('queue', function(data) {
+		queue = data;
 		var queues = $('#queues')[0];
+		var old_last_queue_serial = last_queue_serial;
 		for (var i = 0; i < data.length; i++) {
+			if (data[i].serial <= old_last_queue_serial)
+				continue;
 			queues.add(new Option(
 				'[' + time(data[i].duration) +
 				'] ' + data[i].title,
@@ -83,9 +90,6 @@ function update() {
 			if (data[i].serial > last_queue_serial)
 				last_queue_serial = data[i].serial;
 		}
-	});
-	$.get('queue', function(data) {
-		queue = data;
 	});
 }
 

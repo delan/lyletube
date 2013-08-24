@@ -106,12 +106,7 @@ def p_heap():
 		urls = flask.request.form['urls'].split('\r\n')
 		for url in urls:
 			threading.Thread(target=submiturl, args=(url,)).start()
-	if flask.request.args.has_key('after'):
-		after = int(flask.request.args['after'])
-		result = [obj for obj in heap if obj['serial'] > after]
-	else:
-		result = heap
-	return flask.Response(json.dumps(result), mimetype='application/json')
+	return flask.Response(json.dumps(heap), mimetype='application/json')
 
 @app.route('/queue', methods=['GET', 'POST'])
 def p_queue():
@@ -125,12 +120,7 @@ def p_queue():
 					last_queue_serial += 1
 					obj['serial'] = last_queue_serial
 					queue.append(obj)
-	if flask.request.args.has_key('after'):
-		after = int(flask.request.args['after'])
-		result = [obj for obj in queue if obj['serial'] > after]
-	else:
-		result = queue
-	return flask.Response(json.dumps(result), mimetype='application/json')
+	return flask.Response(json.dumps(queue), mimetype='application/json')
 
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
