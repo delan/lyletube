@@ -13,7 +13,8 @@ function ready() {
 	console.log(h_ready);
 	yt = new YT.Player('ytdom', {
 		playerVars: {
-			wmode: 'transparent',
+			// wmode: 'transparent',
+			wmode: 'opaque',
 			iv_load_policy: 3,
 			modestbranding: 1,
 			controls: 0,
