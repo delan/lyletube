@@ -46,6 +46,11 @@ function play(id) {
 	yt.setVolume(100);
 }
 
+function seek(t) {
+	console.log('seek() called');
+	yt.seekTo(t);
+}
+
 function on(ytevent, func) {
 	handlers[ytevent] = handlers[ytevent] || [];
 	handlers[ytevent].push(func);
@@ -64,6 +69,7 @@ global.yt = null;
 global.onYouTubeIframeAPIReady = ready;
 global.show = show;
 global.play = play;
+global.seek = seek;
 global.yton = on;
 
 $(window).on('unload', global.close);

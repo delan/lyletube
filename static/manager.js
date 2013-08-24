@@ -45,12 +45,18 @@ function update() {
 	}
 }
 
+function seek() {
+	player.seek(this.value);
+}
+
 $(window).on('unload', function() {
 	if (player)
 		player.close();
 });
 
 $('#reopen').click(reopen);
+
+$('#seek').change(seek);
 
 global.setInterval(update, 500);
 
