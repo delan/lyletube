@@ -43,6 +43,9 @@ function update() {
 		}
 		$('#elapsed').text(time(a));
 		$('#total').text(time(b));
+	} else {
+		$('#title').text('(none)');
+		$('#elapsed, #total').text('0:00');
 	}
 	$('#controls input, #controls button:not(#reopen)').
 		prop('disabled', !ready);
