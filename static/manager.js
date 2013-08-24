@@ -51,13 +51,14 @@ function update() {
 	$('#controls input, #controls button:not(#reopen)').
 		prop('disabled', !ready);
 	$.get('heap?after=' + heap_lastid, function(data) {
+		var heaps = $('#heaps')[0];
 		for (var i = data.length - 1; i >= 0; i--) {
-			$('#heaps')[0].add(new Option(
-				data[i].serial + ' - ' +
-				time(data[i].duration) + ' - ' +
+			heaps.add(new Option(
+				'' + data[i].serial + ' | ' +
+				time(data[i].duration) + ' | ' +
 				data[i].title,
 				i
-			), 0);
+			));
 			if (data[i].serial > heap_lastid)
 				heap_lastid = data[i].serial;
 		}
