@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import flask, os, sys, time, json, re
+import flask, os, sys, time, json, re, urlparse
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
@@ -29,13 +29,13 @@ def parseyt(url):
 	if u.netloc == 'www.youtube.com':
 		if q.has_key('v'):
 			result['good'] = True
-			result['id'] = q['v']
-	elif u.netloc == 'youtu.be':
-		pass
+			result['id'] = q['v'][0]
+		elif u.netloc == 'youtu.be':
+			pass
 	if q.has_key('t'):
-		result['start'] = parse_start(q['t'])
+		result['start'] = parseytt(q['t'][0])
 	if f.has_key('t'):
-		result['start'] = parse_start(f['t'])
+		result['start'] = parseytt(f['t'][0])
 	return result
 
 def parseytt(t):
