@@ -1,7 +1,8 @@
 (function(global) {
 
 var seeking = false;
-var heap_lastid = 0;
+var last_heap_serial = 0;
+var last_queue_serial = 0;
 
 global.player = null;
 global.ready = false;
@@ -50,17 +51,28 @@ function update() {
 	}
 	$('#controls input, #controls button:not(#reopen)').
 		prop('disabled', !ready);
-	$.get('heap?after=' + heap_lastid, function(data) {
+	$.get('heap?after=' + last_heap_serial, function(data) {
 		var heaps = $('#heaps')[0];
-		for (var i = data.length - 1; i >= 0; i--) {
+		for (var i = 0; i < data.length; i++) {
 			heaps.add(new Option(
-				'' + data[i].serial + ' | ' +
-				time(data[i].duration) + ' | ' +
-				data[i].title,
-				i
+				'[' + time(data[i].duration) +
+				'] ' + data[i].title,
+				data[i].serial
 			));
-			if (data[i].serial > heap_lastid)
-				heap_lastid = data[i].serial;
+			if (data[i].serial > last_heap_serial)
+				last_heap_serial = data[i].serial;
+		}
+	});
+	$.get('queue?after=' + last_queue_serial, function(data) {
+		var queues = $('#queues')[0];
+		for (var i = 0; i < data.length; i++) {
+			queues.add(new Option(
+				'[' + time(data[i].duration) +
+				'] ' + data[i].title,
+				data[i].serial
+			));
+			if (data[i].serial > last_queue_serial)
+				last_queue_serial = data[i].serial;
 		}
 	});
 }
@@ -102,6 +114,19 @@ $('#pp').click(function() {
 		player.yt.playVideo();
 	else
 		player.yt.pauseVideo();
+});
+
+$('#approve').click(function() {
+	console.log('#approve:click called');
+	var heaps = $('#heaps')[0];
+	var serials = [];
+	for (var i = heaps.options.length - 1; i >= 0; i--) {
+		if (heaps.options[i].selected) {
+			serials.push(parseInt(heaps.options[i].value));
+			heaps.remove(i);
+		}
+	}
+	$.post('queue', { serials: JSON.stringify(serials) });
 });
 
 global.setInterval(update, 500);

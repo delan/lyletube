@@ -16,7 +16,8 @@ PORT = 13337
 heap = []
 queue = []
 history = []
-lastid = 0
+last_heap_serial = 0
+last_queue_serial = 0
 
 def parseyt(url):
 	u = urlparse.urlparse(url)
@@ -82,10 +83,10 @@ def submiturl(url):
 	obj = parseyt(url)
 	obj = getytinfo(obj)
 	if obj is not None:
-		global lastid
-		lastid += 1
-		obj['serial'] = lastid
-		heap.insert(0, obj)
+		global last_heap_serial
+		last_heap_serial += 1
+		obj['serial'] = last_heap_serial
+		heap.append(obj)
 
 @app.route('/')
 def p_hello():
@@ -110,6 +111,25 @@ def p_heap():
 		result = [obj for obj in heap if obj['serial'] > after]
 	else:
 		result = heap
+	return flask.Response(json.dumps(result), mimetype='application/json')
+
+@app.route('/queue', methods=['GET', 'POST'])
+def p_queue():
+	global last_queue_serial
+	if flask.request.method == 'POST':
+		serials = json.loads(flask.request.form['serials'])
+		for serial in serials:
+			for i, obj in enumerate(heap):
+				if obj['serial'] == serial:
+					obj = heap.pop(i)
+					last_queue_serial += 1
+					obj['serial'] = last_queue_serial
+					queue.append(obj)
+	if flask.request.args.has_key('after'):
+		after = int(flask.request.args['after'])
+		result = [obj for obj in queue if obj['serial'] > after]
+	else:
+		result = queue
 	return flask.Response(json.dumps(result), mimetype='application/json')
 
 if __name__ == '__main__':
