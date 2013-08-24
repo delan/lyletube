@@ -72,7 +72,7 @@ def getytinfo(obj):
 		if info.has_key('title') and info.has_key('length_seconds'):
 			good = True
 			obj['title'] = info['title'][0]
-			obj['duration'] = info['length_seconds'][0]
+			obj['duration'] = int(info['length_seconds'][0])
 	if good:
 		result = obj
 	else:
