@@ -103,9 +103,11 @@ function play(id, start) {
 }
 
 function next() {
-	var obj = queue.shift();
-	play(obj.id, obj.start);
-	$('#title').text(obj.title);
+	var obj;
+	if (obj = queue.shift()) {
+		play(obj.id, obj.start);
+		$('#title').text(obj.title);
+	}
 }
 
 $(window).on('unload', function() {
