@@ -53,9 +53,7 @@ function play(id) {
 	player.yt.loadVideoById(id);
 }
 
-function seek() {
-	player.yt.seekTo(this.value);
-}
+function seek() 
 
 $(window).on('unload', function() {
 	if (player)
@@ -64,7 +62,19 @@ $(window).on('unload', function() {
 
 $('#reopen').click(reopen);
 
-$('#seek').change(seek);
+$('#seek').change(function() {
+	player.yt.seekTo(this.value);
+});
+
+$('#seek').mousedown(function() {
+	console.log('#seek:mousedown called');
+	seeking = true;
+});
+
+$('#seek').mouseup(function() {
+	console.log('#seek:mouseup called');
+	seeking = false;
+});
 
 global.setInterval(update, 500);
 
