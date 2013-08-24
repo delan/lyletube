@@ -118,6 +118,7 @@ function play_next_in_playlist() {
 		queue_list.remove(0);
 		play_video(current_video.id);
 		$('#title').text(current_video.title);
+		$('#title').prop('title', current_video.title);
 	}
 }
 
