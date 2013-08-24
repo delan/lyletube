@@ -167,6 +167,5 @@ global.setInterval(update, 500);
 reopen();
 
 global.play = play;
-global.next = next;
 
 })(this);
