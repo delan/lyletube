@@ -22,6 +22,9 @@ footer {
 p {
 	margin: 1em;
 }
+.hidden {
+	opacity: 0;
+}
 .subtle {
 	color: #c0c0c0;
 	font-weight: bold;
