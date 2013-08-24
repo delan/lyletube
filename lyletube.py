@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-import flask, os, sys, time, json, re, urlparse, urllib2, threading
+import flask, os, sys, time, json, re, urlparse
+import random, urllib2, threading, functools
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
@@ -12,6 +13,7 @@ else:
 
 app = flask.Flask(__name__, static_folder=os.path.join(basedir, 'static'))
 PORT = 13337
+PASS = ''.join(random.choice('abcdefghijklmnopqrstuvwxyz') for i in range(10))
 
 heap = []
 queue = []
@@ -88,27 +90,40 @@ def submiturl(url):
 		obj['serial'] = last_heap_serial
 		heap.append(obj)
 
+def privileged(f):
+	@functools.wraps(f)
+	def decorated(*args, **kwargs):
+		auth = flask.request.authorization
+		if not auth or auth.password != PASS:
+			return flask.Response('', 401,
+				{'WWW-Authenticate': 'Basic'})
+		return f(*args, **kwargs)
+	return decorated
+
 @app.route('/')
 def p_hello():
 	return flask.send_from_directory(app.static_folder, 'submit.html')
 
 @app.route('/manager')
+@privileged
 def p_manager():
 	return flask.send_from_directory(app.static_folder, 'manager.html')
 
 @app.route('/player')
+@privileged
 def p_player():
 	return flask.send_from_directory(app.static_folder, 'player.html')
 
 @app.route('/heap', methods=['GET', 'POST'])
 def p_heap():
 	if flask.request.method == 'POST':
-		urls = flask.request.form['urls'].split('\r\n')
+		urls = flask.request.form['urls'].split('\n')
 		for url in urls:
 			threading.Thread(target=submiturl, args=(url,)).start()
 	return flask.Response(json.dumps(heap), mimetype='application/json')
 
 @app.route('/queue', methods=['GET', 'POST'])
+@privileged
 def p_queue():
 	global last_queue_serial
 	if flask.request.method == 'POST':
@@ -123,6 +138,7 @@ def p_queue():
 	return flask.Response(json.dumps(queue), mimetype='application/json')
 
 @app.route('/dequeue', methods=['POST'])
+@privileged
 def p_dequeue():
 	serials = json.loads(flask.request.form['serials'])
 	for serial in serials:
@@ -136,5 +152,6 @@ if __name__ == '__main__':
 		PORT = sys.argv[1]
 	server = HTTPServer(WSGIContainer(app))
 	print 'Now listening on port ' + str(PORT)
+	print 'Manager credentials: admin:' + PASS
 	server.listen(PORT)
 	IOLoop.instance().start()
