@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import flask, os, sys, time, json, re, urlparse, urllib2
+import flask, os, sys, time, json, re, urlparse, urllib2, threading
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
@@ -12,6 +12,10 @@ else:
 
 app = flask.Flask(__name__, static_folder=os.path.join(basedir, 'static'))
 PORT = 13337
+
+heap = []
+queue = []
+history = []
 
 def parseyt(url):
 	u = urlparse.urlparse(url)
@@ -56,26 +60,47 @@ def parseytt(t):
 	return result
 
 def getytinfo(obj):
-	info = urlparse.parse_qs(urllib2.urlopen(
-		'http://www.youtube.com/get_video_info?video_id=' +
-		obj['id']
-	).read())
-	if info.has_key('title') and info.has_key('length_seconds'):
-		obj['title'] = info['title'][0]
-		obj['duration'] = info['length_seconds'][0]
-	return obj
+	good = False
+	if obj['good']:
+		info = urlparse.parse_qs(urllib2.urlopen(
+			'http://www.youtube.com/get_video_info?video_id=' +
+			obj['id']
+		).read())
+		if info.has_key('title') and info.has_key('length_seconds'):
+			good = True
+			obj['title'] = info['title'][0]
+			obj['duration'] = info['length_seconds'][0]
+	if good:
+		result = obj
+	else:
+		result = None
+	return result
+
+def submiturl(url):
+	obj = parseyt(url)
+	obj = getytinfo(obj)
+	if obj is not None:
+		heap.insert(0, obj)
 
 @app.route('/')
-def hello():
+def p_hello():
 	return flask.send_from_directory(app.static_folder, 'submit.html')
 
 @app.route('/manager')
-def manager():
+def p_manager():
 	return flask.send_from_directory(app.static_folder, 'manager.html')
 
 @app.route('/player')
-def player():
+def p_player():
 	return flask.send_from_directory(app.static_folder, 'player.html')
+
+@app.route('/heap', methods=['GET', 'POST'])
+def p_heap():
+	if flask.request.method == 'POST':
+		urls = flask.request.form['urls'].split('\r\n')
+		for url in urls:
+			threading.Thread(target=submiturl, args=(url,)).start()
+	return flask.Response(json.dumps(heap), mimetype='application/json')
 
 if __name__ == '__main__':
 	if len(sys.argv) > 1:

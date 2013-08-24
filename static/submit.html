@@ -7,8 +7,11 @@
 		<link href="static/submit.css" rel="stylesheet">
 	</head>
 	<body>
-		<button id="submit">submit.</button>
-		<textarea id="urls" wrap="off"
-			placeholder="one YouTube URL per line"></textarea>
+		<form method="POST" action="heap">
+			<button type="submit" id="submit">submit.</button>
+			<textarea id="urls" name="urls" wrap="off"
+				placeholder="one YouTube URL per line"
+				></textarea>
+		</form>
 	</body>
 </html>
