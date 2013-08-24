@@ -53,8 +53,6 @@ function play(id) {
 	player.yt.loadVideoById(id);
 }
 
-function seek() 
-
 $(window).on('unload', function() {
 	if (player)
 		player.close();
