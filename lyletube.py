@@ -11,7 +11,7 @@ else:
 	basedir = os.path.dirname(__file__)
 
 app = flask.Flask(__name__, static_folder=os.path.join(basedir, 'static'))
-PORT = 80
+PORT = 13337
 
 @app.route('/')
 def hello():
