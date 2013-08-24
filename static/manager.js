@@ -105,6 +105,10 @@ function play(id, start) {
 function next() {
 	var obj;
 	if (obj = queue.shift()) {
+		var queues = $('#queues')[0];
+		var serials = [parseInt(queues.options[0].value)];
+		$.post('dequeue', { serials: JSON.stringify(serials) });
+		queues.remove(0);
 		play(obj.id, obj.start);
 		$('#title').text(obj.title);
 	}

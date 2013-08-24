@@ -122,6 +122,15 @@ def p_queue():
 					queue.append(obj)
 	return flask.Response(json.dumps(queue), mimetype='application/json')
 
+@app.route('/dequeue', methods=['POST'])
+def p_dequeue():
+	serials = json.loads(flask.request.form['serials'])
+	for serial in serials:
+		for i, obj in enumerate(queue):
+			if obj['serial'] == serial:
+				obj = queue.pop(i)
+	return flask.Response(json.dumps(queue), mimetype='application/json')
+
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
 		PORT = sys.argv[1]
