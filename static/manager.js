@@ -3,6 +3,7 @@
 var currently_mouse_seeking = false;
 var last_heap_serial = 0;
 var last_queue_serial = 0;
+var last_history_serial = 0;
 
 global.video_queue = [];
 global.current_video = null;
@@ -65,6 +66,7 @@ function update_ui() {
 		prop('disabled', !global.ready);
 	$.get('heap', get_heap_handler);
 	$.get('queue', get_queue_handler);
+	$.get('history', get_history_handler);
 }
 
 function get_heap_handler(data) {
@@ -97,6 +99,22 @@ function get_queue_handler(data) {
 		));
 		if (data[i].serial > last_queue_serial)
 			last_queue_serial = data[i].serial;
+	}
+}
+
+function get_history_handler(data) {
+	var history_list = $('#history_list')[0];
+	var old_last_history_serial = last_history_serial;
+	for (var i = 0; i < data.length; i++) {
+		if (data[i].serial <= old_last_history_serial)
+			continue;
+		history_list.add(new Option(
+			'[' + friendly_time(data[i].duration) +
+			'] ' + data[i].title,
+			data[i].serial
+		));
+		if (data[i].serial > last_history_serial)
+			last_history_serial = data[i].serial;
 	}
 }
 
@@ -197,6 +215,19 @@ $('#queue_delete_button').click(function() {
 		}
 	}
 	$.post('dequeue', { serials: JSON.stringify(serials) });
+});
+
+$('#history_replay_button').click(function() {
+	console.log('#history_replay_button:click called');
+	var history_list = $('#history_list')[0];
+	var serials = [];
+	for (var i = 0; i < history_list.options.length; i++) {
+		if (history_list.options[i].selected) {
+			var value = history_list.options[i].value;
+			serials.push(parseInt(value));
+		}
+	}
+	$.post('queue', { serials: JSON.stringify(serials) });
 });
 
 global.setInterval(update_ui, 500);

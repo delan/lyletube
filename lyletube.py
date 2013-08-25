@@ -138,6 +138,18 @@ def p_queue():
 					queue.append(obj)
 	return flask.Response(json.dumps(queue), mimetype='application/json')
 
+@app.route('/history', methods=['GET', 'POST'])
+@privileged
+def p_history():
+	if flask.request.method == 'POST':
+		serials = json.loads(flask.request.form['serials'])
+		for serial in serials:
+			for i, obj in enumerate(queue):
+				if obj['serial'] == serial:
+					obj = queue.pop(i)
+					history.append(obj)
+	return flask.Response(json.dumps(history), mimetype='application/json')
+
 @app.route('/dequeue', methods=['POST'])
 @privileged
 def p_dequeue():
