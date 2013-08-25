@@ -158,7 +158,7 @@ $('#pp').click(function() {
 $('#next').click(play_next_in_playlist);
 
 $('#heap_approve_button').click(function() {
-	console.log('#approve:click called');
+	console.log('#heap_approve_button:click called');
 	var heap_list = $('#heap_list')[0];
 	var serials = [];
 	for (var i = heap_list.options.length - 1; i >= 0; i--) {
@@ -169,6 +169,20 @@ $('#heap_approve_button').click(function() {
 		}
 	}
 	$.post('queue', { serials: JSON.stringify(serials) });
+});
+
+$('#queue_delete_button').click(function() {
+	console.log('#queue_delete_button:click called');
+	var queue_list = $('#queue_list')[0];
+	var serials = [];
+	for (var i = queue_list.options.length - 1; i >= 0; i--) {
+		if (queue_list.options[i].selected) {
+			var value = queue_list.options[i].value;
+			serials.push(parseInt(value));
+			queue_list.remove(i);
+		}
+	}
+	$.post('dequeue', { serials: JSON.stringify(serials) });
 });
 
 global.setInterval(update_ui, 500);
