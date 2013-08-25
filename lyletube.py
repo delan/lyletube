@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import flask, os, sys, time, json, re, urlparse
-import random, urllib2, threading, functools
+import random, urllib2, functools, threadpool
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
@@ -20,6 +20,7 @@ queue = []
 history = []
 last_heap_serial = 0
 last_queue_serial = 0
+pool = threadpool.ThreadPool(8)
 
 def parseyt(url):
 	u = urlparse.urlparse(url)
@@ -118,8 +119,8 @@ def p_player():
 def p_heap():
 	if flask.request.method == 'POST':
 		urls = flask.request.form['urls'].split('\n')
-		for url in urls:
-			threading.Thread(target=submiturl, args=(url,)).start()
+		requests = threadpool.makeRequests(submiturl, urls)
+		[pool.putRequest(request) for request in requests]
 	return flask.Response(json.dumps(heap), mimetype='application/json')
 
 @app.route('/queue', methods=['GET', 'POST'])
