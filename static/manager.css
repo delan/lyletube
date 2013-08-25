@@ -34,6 +34,10 @@ h2 {
 		left: 0;
 		bottom: 0;
 	}
+	#next {
+		left: 4rem;
+		bottom: 0;
+	}
 	#reopen {
 		right: 0;
 		bottom: 0;
@@ -41,7 +45,7 @@ h2 {
 	#playing {
 		height: 3rem;
 		position: absolute;
-		left: 5rem;
+		left: 9rem;
 		right: 20rem;
 		bottom: 0;
 		overflow: hidden;

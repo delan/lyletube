@@ -155,6 +155,8 @@ $('#pp').click(function() {
 		player_window.yt.pauseVideo();
 });
 
+$('#next').click(play_next_in_playlist);
+
 $('#heap_approve_button').click(function() {
 	console.log('#approve:click called');
 	var heap_list = $('#heap_list')[0];
