@@ -143,6 +143,20 @@ function play_next_in_playlist() {
 	}
 }
 
+function scalpel(list_id, do_delete, target_url) {
+	var list = $('#' + list_id)[0];
+	var serials = [];
+	for (var i = list.options.length - 1; i >= 0; i--) {
+		if (list.options[i].selected) {
+			var value = list.options[i].value;
+			serials.unshift(parseInt(value));
+			if (do_delete)
+				list.remove(i);
+		}
+	}
+	$.post(target_url, { serials: JSON.stringify(serials) });
+}
+
 $(window).on('unload', function() {
 	console.log('window:unload called');
 	if (player_window)
@@ -178,57 +192,22 @@ $('#next').click(play_next_in_playlist);
 
 $('#heap_reject_button').click(function() {
 	console.log('#heap_reject_button:click called');
-	var heap_list = $('#heap_list')[0];
-	var serials = [];
-	for (var i = heap_list.options.length - 1; i >= 0; i--) {
-		if (heap_list.options[i].selected) {
-			var value = heap_list.options[i].value;
-			serials.unshift(parseInt(value));
-			heap_list.remove(i);
-		}
-	}
-	$.post('delete_heap', { serials: JSON.stringify(serials) });
+	scalpel('heap_list', true, 'delete_heap');
 });
 
 $('#heap_approve_button').click(function() {
 	console.log('#heap_approve_button:click called');
-	var heap_list = $('#heap_list')[0];
-	var serials = [];
-	for (var i = heap_list.options.length - 1; i >= 0; i--) {
-		if (heap_list.options[i].selected) {
-			var value = heap_list.options[i].value;
-			serials.unshift(parseInt(value));
-			heap_list.remove(i);
-		}
-	}
-	$.post('heap_to_queue', { serials: JSON.stringify(serials) });
+	scalpel('heap_list', true, 'heap_to_queue');
 });
 
 $('#queue_delete_button').click(function() {
 	console.log('#queue_delete_button:click called');
-	var queue_list = $('#queue_list')[0];
-	var serials = [];
-	for (var i = queue_list.options.length - 1; i >= 0; i--) {
-		if (queue_list.options[i].selected) {
-			var value = queue_list.options[i].value;
-			serials.unshift(parseInt(value));
-			queue_list.remove(i);
-		}
-	}
-	$.post('delete_queue', { serials: JSON.stringify(serials) });
+	scalpel('queue_list', true, 'delete_queue');
 });
 
 $('#history_replay_button').click(function() {
 	console.log('#history_replay_button:click called');
-	var history_list = $('#history_list')[0];
-	var serials = [];
-	for (var i = history_list.options.length - 1; i >= 0; i--) {
-		if (history_list.options[i].selected) {
-			var value = history_list.options[i].value;
-			serials.push(parseInt(value));
-		}
-	}
-	$.post('history_to_queue', { serials: JSON.stringify(serials) });
+	scalpel('history_list', false, 'history_to_queue');
 });
 
 global.setInterval(update_ui, 500);
