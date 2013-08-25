@@ -225,7 +225,7 @@ $('#history_replay_button').click(function() {
 	for (var i = history_list.options.length - 1; i >= 0; i--) {
 		if (history_list.options[i].selected) {
 			var value = history_list.options[i].value;
-			serials.unshift(parseInt(value));
+			serials.push(parseInt(value));
 		}
 	}
 	$.post('history_to_queue', { serials: JSON.stringify(serials) });
