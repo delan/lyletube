@@ -5,7 +5,7 @@ function submit_videos() {
 	var submit_button = $('#submit_button');
 	var url_entry = $('#url_entry');
 	form_controls.prop('disabled', true);
-	$.post('heap', { urls: url_entry.val() }, function() {
+	$.post('add_heap', { urls: url_entry.val() }, function() {
 		form_controls.prop('disabled', false);
 		url_entry.val('');
 	});

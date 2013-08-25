@@ -121,60 +121,85 @@ def p_manager():
 def p_player():
 	return flask.send_from_directory(app.static_folder, 'player.html')
 
-@app.route('/heap', methods=['GET', 'POST'])
-def p_heap():
-	if flask.request.method == 'POST':
-		urls = flask.request.form['urls'].split('\n')
-		requests = threadpool.makeRequests(submiturl, urls)
-		[pool.putRequest(request) for request in requests]
+@app.route('/get_heap', methods=['GET'])
+def p_get_heap():
 	return flask.Response(json.dumps(heap), mimetype='application/json')
 
-@app.route('/queue', methods=['GET', 'POST'])
-@privileged
-def p_queue():
-	global last_queue_serial
-	if flask.request.method == 'POST':
-		serials = json.loads(flask.request.form['serials'])
-		for serial in serials:
-			for i, obj in enumerate(heap):
-				if obj['serial'] == serial:
-					obj = heap.pop(i)
-					last_queue_serial += 1
-					obj['serial'] = last_queue_serial
-					queue.append(obj)
-	return flask.Response(json.dumps(queue), mimetype='application/json')
+@app.route('/add_heap', methods=['POST'])
+def p_add_heap():
+	urls = flask.request.form['urls'].split('\n')
+	requests = threadpool.makeRequests(submiturl, urls)
+	[pool.putRequest(request) for request in requests]
+	return flask.Response(json.dumps(heap), mimetype='application/json')
 
-@app.route('/history', methods=['GET', 'POST'])
+@app.route('/delete_heap', methods=['POST'])
 @privileged
-def p_history():
-	if flask.request.method == 'POST':
-		serials = json.loads(flask.request.form['serials'])
-		for serial in serials:
-			for i, obj in enumerate(queue):
-				if obj['serial'] == serial:
-					obj = queue.pop(i)
-					history.append(obj)
-	return flask.Response(json.dumps(history), mimetype='application/json')
-
-@app.route('/dequeue', methods=['POST'])
-@privileged
-def p_dequeue():
-	serials = json.loads(flask.request.form['serials'])
-	for serial in serials:
-		for i, obj in enumerate(queue):
-			if obj['serial'] == serial:
-				obj = queue.pop(i)
-	return flask.Response(json.dumps(queue), mimetype='application/json')
-
-@app.route('/deheap', methods=['POST'])
-@privileged
-def p_deheap():
+def p_delete_heap():
 	serials = json.loads(flask.request.form['serials'])
 	for serial in serials:
 		for i, obj in enumerate(heap):
 			if obj['serial'] == serial:
 				obj = heap.pop(i)
 	return flask.Response(json.dumps(heap), mimetype='application/json')
+
+@app.route('/heap_to_queue', methods=['POST'])
+@privileged
+def p_heap_to_queue():
+	global last_queue_serial
+	serials = json.loads(flask.request.form['serials'])
+	for serial in serials:
+		for i, obj in enumerate(heap):
+			if obj['serial'] == serial:
+				obj = heap.pop(i)
+				last_queue_serial += 1
+				obj['serial'] = last_queue_serial
+				queue.append(obj)
+	return flask.Response(json.dumps(queue), mimetype='application/json')
+
+@app.route('/get_history', methods=['GET'])
+@privileged
+def p_get_history():
+	return flask.Response(json.dumps(history), mimetype='application/json')
+
+@app.route('/history_to_queue', methods=['POST'])
+@privileged
+def p_history_to_queue():
+	global last_queue_serial
+	serials = json.loads(flask.request.form['serials'])
+	for serial in serials:
+		for i, obj in enumerate(history):
+			if obj['serial'] == serial:
+				last_queue_serial += 1
+				obj = obj.copy()
+				obj['serial'] = last_queue_serial
+				queue.append(obj)
+	return flask.Response(json.dumps(queue), mimetype='application/json')
+
+@app.route('/queue_to_history', methods=['POST'])
+@privileged
+def p_queue_to_history():
+	global last_queue_serial
+	serials = json.loads(flask.request.form['serials'])
+	for serial in serials:
+		for i, obj in enumerate(queue):
+			if obj['serial'] == serial:
+				history.append(queue.pop(i))
+	return flask.Response(json.dumps(history), mimetype='application/json')
+
+@app.route('/get_queue', methods=['GET'])
+@privileged
+def p_get_queue():
+	return flask.Response(json.dumps(queue), mimetype='application/json')
+
+@app.route('/delete_queue', methods=['POST'])
+@privileged
+def p_delete_queue():
+	serials = json.loads(flask.request.form['serials'])
+	for serial in serials:
+		for i, obj in enumerate(queue):
+			if obj['serial'] == serial:
+				obj = queue.pop(i)
+	return flask.Response(json.dumps(queue), mimetype='application/json')
 
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
