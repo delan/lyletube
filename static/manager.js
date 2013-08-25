@@ -37,7 +37,7 @@ function yt_handler_state(event) {
 	if (event.data == 0)
 		play_next_in_playlist();
 	else if (event.data == 1)
-		player_window.yt.seekTo(current.start || 0);
+		player_window.yt.seekTo(current_video.start || 0);
 }
 
 function friendly_time(sec) {
