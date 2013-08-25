@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import flask, os, sys, time, json, re, urlparse
-import random, urllib2, functools, threadpool
+import random, urllib2, functools, threadpool, xml.dom.minidom
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
@@ -68,14 +68,20 @@ def parseytt(t):
 def getytinfo(obj):
 	good = False
 	if obj['good']:
-		info = urlparse.parse_qs(urllib2.urlopen(
-			'http://www.youtube.com/get_video_info?video_id=' +
-			obj['id']
-		).read())
-		if info.has_key('title') and info.has_key('length_seconds'):
+		info = xml.dom.minidom.parse(urllib2.urlopen(
+			'https://gdata.youtube.com/feeds/api/videos/' +
+			obj['id'] + '?v=2'
+		))
+		title = info.getElementsByTagNameNS(
+			'http://search.yahoo.com/mrss/', 'title'
+		)
+		duration = info.getElementsByTagNameNS(
+			'http://gdata.youtube.com/schemas/2007', 'duration'
+		)
+		if len(title) > 0 and len(duration) > 0:
 			good = True
-			obj['title'] = info['title'][0]
-			obj['duration'] = int(info['length_seconds'][0])
+			obj['title'] = title[0].childNodes[0].nodeValue
+			obj['duration'] = duration[0].getAttribute('seconds')
 	if good:
 		result = obj
 	else:
