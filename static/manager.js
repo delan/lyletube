@@ -69,17 +69,23 @@ function update_ui() {
 	$.get('get_history', get_history_handler);
 }
 
+function add_video_to_select_box(list, video_obj, at_start) {
+	var first = null;
+	if (at_start)
+		first = list.options[0] || null;
+	list.add(new Option(
+		'[' + friendly_time(video_obj.duration) +
+		'] ' + video_obj.title, video_obj.serial
+	), first);
+}
+
 function get_heap_handler(data) {
 	var heap_list = $('#heap_list')[0];
 	var old_last_heap_serial = last_heap_serial;
 	for (var i = 0; i < data.length; i++) {
 		if (data[i].serial <= old_last_heap_serial)
 			continue;
-		heap_list.add(new Option(
-			'[' + friendly_time(data[i].duration) +
-			'] ' + data[i].title,
-			data[i].serial
-		));
+		add_video_to_select_box(heap_list, data[i], false);
 		if (data[i].serial > last_heap_serial)
 			last_heap_serial = data[i].serial;
 	}
@@ -92,11 +98,7 @@ function get_queue_handler(data) {
 	for (var i = 0; i < data.length; i++) {
 		if (data[i].serial <= old_last_queue_serial)
 			continue;
-		queue_list.add(new Option(
-			'[' + friendly_time(data[i].duration) +
-			'] ' + data[i].title,
-			data[i].serial
-		));
+		add_video_to_select_box(queue_list, data[i], false);
 		if (data[i].serial > last_queue_serial)
 			last_queue_serial = data[i].serial;
 	}
@@ -108,11 +110,7 @@ function get_history_handler(data) {
 	for (var i = 0; i < data.length; i++) {
 		if (data[i].serial <= old_last_history_serial)
 			continue;
-		history_list.add(new Option(
-			'[' + friendly_time(data[i].duration) +
-			'] ' + data[i].title,
-			data[i].serial
-		), history_list.options[0]);
+		add_video_to_select_box(history_list, data[i], true);
 		if (data[i].serial > last_history_serial)
 			last_history_serial = data[i].serial;
 	}
