@@ -157,6 +157,20 @@ $('#pp').click(function() {
 
 $('#next').click(play_next_in_playlist);
 
+$('#heap_reject_button').click(function() {
+	console.log('#heap_reject_button:click called');
+	var heap_list = $('#heap_list')[0];
+	var serials = [];
+	for (var i = heap_list.options.length - 1; i >= 0; i--) {
+		if (heap_list.options[i].selected) {
+			var value = heap_list.options[i].value;
+			serials.push(parseInt(value));
+			heap_list.remove(i);
+		}
+	}
+	$.post('deheap', { serials: JSON.stringify(serials) });
+});
+
 $('#heap_approve_button').click(function() {
 	console.log('#heap_approve_button:click called');
 	var heap_list = $('#heap_list')[0];

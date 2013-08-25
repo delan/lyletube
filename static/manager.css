@@ -69,9 +69,19 @@ h2 {
 	#heap_section button, #queue_section button, #history_section button {
 		font-family: Symbola;
 		font-size: 2em;
-		width: 100%;
 		position: absolute;
 		bottom: 0;
+	}
+	#heap_approve_button {
+		width: 50% !important;
+		left: 50%;
+	}
+	#heap_reject_button {
+		width: 50%;
+		right: 50%;
+	}
+	#queue_delete_button, #history_replay_button {
+		width: 100%;
 	}
 	#heap_section {
 		left: 2.5%;

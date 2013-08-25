@@ -148,6 +148,16 @@ def p_dequeue():
 				obj = queue.pop(i)
 	return flask.Response(json.dumps(queue), mimetype='application/json')
 
+@app.route('/deheap', methods=['POST'])
+@privileged
+def p_deheap():
+	serials = json.loads(flask.request.form['serials'])
+	for serial in serials:
+		for i, obj in enumerate(heap):
+			if obj['serial'] == serial:
+				obj = heap.pop(i)
+	return flask.Response(json.dumps(heap), mimetype='application/json')
+
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
 		PORT = sys.argv[1]
