@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import flask, os, sys, time, json, re, urlparse
+import flask, os, sys, time, json, re, urlparse, isodate
 import random, urllib2, functools, threadpool, xml.dom.minidom
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
@@ -14,6 +14,7 @@ else:
 app = flask.Flask(__name__, static_folder=os.path.join(basedir, 'static'))
 PORT = 13337
 PASS = ''.join(random.choice('abcdefghijklmnopqrstuvwxyz') for i in range(10))
+YOUTUBE_API_KEY = open('youtube_api_key').read()
 
 heap = []
 queue = []
@@ -68,20 +69,16 @@ def parseytt(t):
 def getytinfo(obj):
 	good = False
 	if obj['good']:
-		info = xml.dom.minidom.parse(urllib2.urlopen(
-			'https://gdata.youtube.com/feeds/api/videos/' +
-			obj['id'] + '?v=2'
-		))
-		title = info.getElementsByTagNameNS(
-			'http://search.yahoo.com/mrss/', 'title'
-		)
-		duration = info.getElementsByTagNameNS(
-			'http://gdata.youtube.com/schemas/2007', 'duration'
-		)
-		if len(title) > 0 and len(duration) > 0:
-			good = True
-			obj['title'] = title[0].childNodes[0].nodeValue
-			obj['duration'] = duration[0].getAttribute('seconds')
+		info = json.loads(urllib2.urlopen("https://www.googleapis.com/youtube/v3/videos?id={}&key={}&part=snippet,contentDetails,statistics,status".format(obj['id'], YOUTUBE_API_KEY)).read())
+		try:
+			info = info['items'][0]
+		except IndexError:
+			return
+		good = True
+		title = info['snippet']['title']
+		obj['title'] = title
+		duration = info['contentDetails']['duration']
+		obj['duration'] = isodate.parse_duration(duration).total_seconds()
 	if good:
 		result = obj
 	else:
